@@ -31,7 +31,7 @@ def respond(output):
     os.remove("response.mp3")
 
 while (True):
-    data = input("Enter your command: ")
+    data = listen()
     data.lower()
     if "bye" in data or "stop" in data or "exit" in data:
         respond("Okay, bye. Take care.")

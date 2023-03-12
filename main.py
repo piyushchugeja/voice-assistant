@@ -2,7 +2,7 @@ import speech_recognition as sr
 from gtts import gTTS
 import pyjokes
 import wikipedia as wkp
-import datetime
+from datetime import datetime
 from ecapture import ecapture as ec
 import webbrowser as bro
 import openai
@@ -31,11 +31,21 @@ def respond(output):
     os.remove("response.mp3")
 
 while (True):
-    data = listen()
+    data = input("Enter your command: ")
     data.lower()
     if "bye" in data or "stop" in data or "exit" in data:
         respond("Okay, bye. Take care.")
         exit()
+    elif "time" in data or "date" in data:
+        response = ''
+        if "time" in data and "date" in data:
+            response = "The time is " + datetime.now().strftime("%H:%M") + " and the date is " + datetime.now().strftime("%d/%m/%Y")
+        elif "time" in data:
+            response = "The time is " + datetime.now().strftime("%H:%M")
+        elif "date" in data:
+            response = "The date is " + datetime.now().strftime("%d/%m/%Y")
+        respond(response)
+        
     elif "search for" in data:
         dataIndex = data.split().index("for")
         topic = " ".join(data.split()[dataIndex+1:])
@@ -66,14 +76,14 @@ while (True):
                 response += who_is[i]
             respond("Here is what I received from Wikipedia: " + response)
     else:
-        openai.api_key = "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"
+        # get api key from environment variable
+        openai.api_key = os.getenv("OPENAI_API_KEY")
         response = openai.Completion.create(
             model             = "text-davinci-002",
             prompt            = data,
-            temperature       =   0,
+            temperature       =   0.9,
             max_tokens        = 1000,
             stop              =["?"]
         )
-        print(response)
         print(response['choices'][0]['text'])
         respond(response['choices'][0]['text'])
